@@ -4,9 +4,13 @@ import matplotlib.pyplot as plt
 import mplcursors
 from decimal import Decimal
 import numpy as np
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
+                                               NavigationToolbar2Tk)
 
 fileInput = ""
 
@@ -31,8 +35,13 @@ def handleSequence(event):
 
     fig, axs = plt.subplots(lines)
 
+    for ax in axs:
+        ax.format_coord = lambda x, y: ""
+
     fig.text(0.5, 0.02, 'Nucleotides', ha='center')
     fig.text(0.02, 0.5, 'Signal', va='center', rotation='vertical')
+
+    fig.patch.set_facecolor("#0000002a")
 
     for i in range(lines):
         if lines > 1:
@@ -49,12 +58,27 @@ def handleSequence(event):
     handles, labels = plt.gca().get_legend_handles_labels()
     fig.legend(handles, labels, loc='upper right')
 
+    canvas = FigureCanvasTkAgg(fig,
+                               master=right)
+
     cursor = mplcursors.cursor(hover=True)
     cursor.connect('add', showInformation)
-    plt.show()
+
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=0, column=0, padx=10, pady=5)
+
+    toolbar = NavigationToolbar2Tk(canvas,
+                                   right, pack_toolbar=False)
+
+    toolbar.toolitems = [t for t in NavigationToolbar2Tk.toolitems if
+                         t[0] not in ('Pan',)]
+
+    toolbar.update()
+    toolbar.grid(row=2, column=0, padx=10, pady=5)
 
 
 window = tk.Tk()
+window.winfo_toplevel().title("GenePy")
 window.minsize(800, 500)
 
 left = tk.Frame(window)
