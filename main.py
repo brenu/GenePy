@@ -9,6 +9,7 @@ from scipy.signal import find_peaks
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter import scrolledtext
 
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
                                                NavigationToolbar2Tk)
@@ -17,49 +18,68 @@ fileInput = ""
 linesNumber = 10
 
 
+def ctrlEvent(event):
+    if(20 == event.state and event.keysym == 'c'):
+        return
+    else:
+        return "break"
+
+
 def showInformation(selection):
     selection.annotation.set_text(
         f"{selection.artist.get_label()}\nSignal: {selection.target[1]:.2F}\nNucleotide: {selection.target[0]:.2E}")
 
 
+def getSequenceInfo(data):
+    record = SeqIO.read(fileInput, "abi")
+
+    popup = tk.Toplevel(bg="#eff0f1", width=500, height=200)
+
+    sequenceId = tk.Label(popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left",
+                          text="ID: {}".format(record.id), width=50)
+    sequenceName = tk.Label(
+        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Name: {}".format(record.name), width=50)
+    sequenceDescription = tk.Label(
+        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Description: {}".format(record.description), width=50)
+    sequenceFeatures = tk.Label(
+        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Number of features: {}".format(len(record.features)), width=50)
+    moleculeType = tk.Label(
+        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Molecule type: {}".format(record.annotations["molecule_type"]), width=50)
+    machineModel = tk.Label(
+        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Machine model: {}".format(record.annotations["machine_model"].decode("utf-8") if record.annotations["machine_model"] else "Unknown"), width=50)
+    runStart = tk.Label(
+        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Run start: {}".format(record.annotations["run_start"]), width=50)
+    runFinish = tk.Label(
+        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Run finish: {}".format(record.annotations["run_finish"]), width=50)
+    traceScore = tk.Label(
+        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Trace score: {}".format(record.annotations["abif_raw"]["TrSc1"] if "TrSc1" in record.annotations["abif_raw"].keys() else "Unknown"), width=50)
+    user = tk.Label(
+        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="User: {}".format(record.annotations["abif_raw"]["User1"].decode("utf-8") if "User1" in record.annotations["abif_raw"].keys() else "Unknown"), width=50)
+
+    sequenceId.grid(column=0, row=0)
+    sequenceName.grid(column=0, row=1)
+    sequenceDescription.grid(column=0, row=2)
+    sequenceFeatures.grid(column=0, row=3)
+    moleculeType.grid(column=0, row=4)
+    machineModel.grid(column=0, row=5)
+    runStart.grid(column=0, row=6)
+    runFinish.grid(column=0, row=7)
+    traceScore.grid(column=0, row=8)
+    user.grid(column=0, row=9)
+
+
 def getTextSequence(data):
     record = SeqIO.read(fileInput, "abi")
 
-    # 9 = G      10 = A        11 = T         12 = C
-    channels = ["DATA9", "DATA10", "DATA11", "DATA12"]
-    trace = defaultdict(list)
-    for c in channels:
-        trace[c] = record.annotations["abif_raw"][c]
+    popup = tk.Toplevel(bg="#eff0f1", width=500, height=200)
 
-    sequenceResult = ""
+    textSequence = scrolledtext.ScrolledText(
+        popup, bg="#eff0f1", width=60, height=25, fg="#444", state="normal")
+    # textSequence.insert('1.0', record.seq)
+    textSequence.insert('1.0', record.format("fasta"))
+    textSequence.bind("<Key>", lambda e: ctrlEvent(e))
 
-    valuesDict = {
-        9: "G",
-        10: "A",
-        11: "T",
-        12: "C"
-    }
-
-    peaks = {}
-
-    peaks["DATA9"], _ = find_peaks(
-        record.annotations["abif_raw"]["DATA9"], height=0)
-    peaks["DATA10"], _ = find_peaks(
-        record.annotations["abif_raw"]["DATA10"], height=0)
-    peaks["DATA11"], _ = find_peaks(
-        record.annotations["abif_raw"]["DATA11"], height=0)
-    peaks["DATA12"], _ = find_peaks(
-        record.annotations["abif_raw"]["DATA12"], height=0)
-
-    sequenceRange = len(trace["DATA9"])
-
-    for i in range(sequenceRange):
-        for j in range(9, 13):
-            if trace["DATA{}".format(j)][i] and trace["DATA{}".format(j)][i] in peaks["DATA{}".format(j)]:
-                sequenceResult = sequenceResult + valuesDict[j]
-                break
-
-    print(sequenceResult)
+    textSequence.grid(column=0, row=0)
 
 
 def handleSequence(event):
@@ -155,7 +175,7 @@ selectFileButton = tk.Button(
 )
 sequenceButton = tk.Button(
     left,
-    text="Sequence",
+    text="Plot Sequence",
 
     width=25,
     height=2,
@@ -183,31 +203,45 @@ getTextSequenceButton = tk.Button(
     highlightthickness=0,
     bd=0
 )
+getSequenceInfoButton = tk.Button(
+    left,
+    text="Sequence Information",
+
+    width=25,
+    height=2,
+    bg="#4bb",
+    fg="#fff",
+    activebackground="#4aa",
+    activeforeground="#fff",
+    borderwidth=0,
+    relief="sunken",
+    highlightthickness=0,
+    bd=0
+)
 
 
 def handleFileSelect(event):
     global fileInput
-    fileInput = filedialog.askopenfilename()
+    auxFileInput = filedialog.askopenfilename()
 
-    if fileInput != "":
+    if auxFileInput != "":
+        fileInput = auxFileInput
         greeting.configure(text=fileInput.split("/")[-1])
         selectFileButton.configure(text="Select Another")
         selectFileButton.grid(pady=2)
         getTextSequenceButton.grid(row=2, column=0, padx=10, pady=2)
-        sequenceButton.grid(row=3, column=0, padx=10, pady=(
-            2, window.winfo_screenheight()-786))
+        getSequenceInfoButton.grid(row=3, column=0, padx=10, pady=2)
+        sequenceButton.grid(row=4, column=0, padx=10, pady=(
+            2, window.winfo_screenheight()-850))
 
 
 selectFileButton.bind("<Button-1>", handleFileSelect)
 sequenceButton.bind("<Button-1>", handleSequence)
 getTextSequenceButton.bind("<Button-1>", getTextSequence)
+getSequenceInfoButton.bind("<Button-1>", getSequenceInfo)
 
 greeting.grid(row=0, column=0, padx=10, pady=(25, 12))
 selectFileButton.grid(row=1, column=0, padx=10,
                       pady=(2, window.winfo_screenheight()-686))
-
-# separator = tk.Frame(
-#     window, width=5, height=1, bg="#f55")
-# separator.grid(column=2, row=0, padx=10, pady=0, sticky="N")
 
 window.mainloop()
