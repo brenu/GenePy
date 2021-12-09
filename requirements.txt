@@ -2,3 +2,4 @@ Bio
 numpy
 matplotlib
 mplcursors
+scipy
