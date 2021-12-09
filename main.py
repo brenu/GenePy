@@ -35,26 +35,26 @@ def getSequenceInfo(data):
 
     popup = tk.Toplevel(bg="#eff0f1", width=500, height=200)
 
-    sequenceId = tk.Label(popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left",
+    sequenceId = tk.Label(popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left",
                           text="ID: {}".format(record.id), width=50)
     sequenceName = tk.Label(
-        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Name: {}".format(record.name), width=50)
+        popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left", text="Name: {}".format(record.name), width=50)
     sequenceDescription = tk.Label(
-        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Description: {}".format(record.description), width=50)
+        popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left", text="Description: {}".format(record.description), width=50)
     sequenceFeatures = tk.Label(
-        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Number of features: {}".format(len(record.features)), width=50)
+        popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left", text="Number of features: {}".format(len(record.features)), width=50)
     moleculeType = tk.Label(
-        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Molecule type: {}".format(record.annotations["molecule_type"]), width=50)
+        popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left", text="Molecule type: {}".format(record.annotations["molecule_type"]), width=50)
     machineModel = tk.Label(
-        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Machine model: {}".format(record.annotations["machine_model"].decode("utf-8") if record.annotations["machine_model"] else "Unknown"), width=50)
+        popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left", text="Machine model: {}".format(record.annotations["machine_model"].decode("utf-8") if record.annotations["machine_model"] else "Unknown"), width=50)
     runStart = tk.Label(
-        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Run start: {}".format(record.annotations["run_start"]), width=50)
+        popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left", text="Run start: {}".format(record.annotations["run_start"]), width=50)
     runFinish = tk.Label(
-        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Run finish: {}".format(record.annotations["run_finish"]), width=50)
+        popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left", text="Run finish: {}".format(record.annotations["run_finish"]), width=50)
     traceScore = tk.Label(
-        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="Trace score: {}".format(record.annotations["abif_raw"]["TrSc1"] if "TrSc1" in record.annotations["abif_raw"].keys() else "Unknown"), width=50)
+        popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left", text="Trace score: {}".format(record.annotations["abif_raw"]["TrSc1"] if "TrSc1" in record.annotations["abif_raw"].keys() else "Unknown"), width=50)
     user = tk.Label(
-        popup, bg="#eff0f1", fg="#555", font=('bold'), anchor="w", justify="left", text="User: {}".format(record.annotations["abif_raw"]["User1"].decode("utf-8") if "User1" in record.annotations["abif_raw"].keys() else "Unknown"), width=50)
+        popup, bg="#eff0f1", fg="#555555", font=('bold'), anchor="w", justify="left", text="User: {}".format(record.annotations["abif_raw"]["User1"].decode("utf-8") if "User1" in record.annotations["abif_raw"].keys() else "Unknown"), width=50)
 
     sequenceId.grid(column=0, row=0)
     sequenceName.grid(column=0, row=1)
@@ -74,7 +74,7 @@ def getTextSequence(data):
     popup = tk.Toplevel(bg="#eff0f1", width=500, height=200)
 
     textSequence = scrolledtext.ScrolledText(
-        popup, bg="#eff0f1", width=60, height=25, fg="#444", state="normal")
+        popup, bg="#eff0f1", width=60, height=25, fg="#444444", state="normal")
     # textSequence.insert('1.0', record.seq)
     textSequence.insert('1.0', record.format("fasta"))
     textSequence.bind("<Key>", lambda e: ctrlEvent(e))
@@ -107,13 +107,13 @@ def handleSequence(event):
 
     for i in range(lines):
         if lines > 1:
-            axs[i].plot(trace["DATA9"][i], color="#4BB", label="G")
-            axs[i].plot(trace["DATA10"][i], color="#f45", label="A")
+            axs[i].plot(trace["DATA9"][i], color="#44BBBB", label="G")
+            axs[i].plot(trace["DATA10"][i], color="#FF4455", label="A")
             axs[i].plot(trace["DATA11"][i], color="#4BB543", label="T")
             axs[i].plot(trace["DATA12"][i], color="#FFD540", label="C")
         else:
-            axs.plot(trace["DATA9"], color="#4BB", label="G")
-            axs.plot(trace["DATA10"], color="#f45", label="A")
+            axs.plot(trace["DATA9"], color="#44BBBB", label="G")
+            axs.plot(trace["DATA10"], color="#FF4455", label="A")
             axs.plot(trace["DATA11"], color="#4BB543", label="T")
             axs.plot(trace["DATA12"], color="#FFD540", label="C")
 
@@ -164,10 +164,10 @@ selectFileButton = tk.Button(
     text="Select",
     width=25,
     height=2,
-    bg="#4bb",
-    fg="#fff",
-    activebackground="#4aa",
-    activeforeground="#fff",
+    bg="#44BBBB",
+    fg="#FFFFFF",
+    activebackground="#44AAAA",
+    activeforeground="#FFFFFF",
     borderwidth=0,
     relief="sunken",
     highlightthickness=0,
@@ -179,10 +179,10 @@ sequenceButton = tk.Button(
 
     width=25,
     height=2,
-    bg="#4bb",
-    fg="#fff",
-    activebackground="#4aa",
-    activeforeground="#fff",
+    bg="#44BBBB",
+    fg="#FFFFFF",
+    activebackground="#44AAAA",
+    activeforeground="#FFFFFF",
     borderwidth=0,
     relief="sunken",
     highlightthickness=0,
@@ -194,10 +194,10 @@ getTextSequenceButton = tk.Button(
 
     width=25,
     height=2,
-    bg="#4bb",
-    fg="#fff",
-    activebackground="#4aa",
-    activeforeground="#fff",
+    bg="#44BBBB",
+    fg="#FFFFFF",
+    activebackground="#44AAAA",
+    activeforeground="#FFFFFF",
     borderwidth=0,
     relief="sunken",
     highlightthickness=0,
@@ -209,10 +209,10 @@ getSequenceInfoButton = tk.Button(
 
     width=25,
     height=2,
-    bg="#4bb",
-    fg="#fff",
-    activebackground="#4aa",
-    activeforeground="#fff",
+    bg="#44BBBB",
+    fg="#FFFFFF",
+    activebackground="#44AAAA",
+    activeforeground="#FFFFFF",
     borderwidth=0,
     relief="sunken",
     highlightthickness=0,
